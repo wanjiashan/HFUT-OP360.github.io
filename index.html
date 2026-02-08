@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HFUT-OP360：无人机点云去噪、图像-点云配准与视觉语言导航统一基准</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
+
+  <style>
+    /* 全局样式 - 干净学术风格（OpenFly-like） */
+    body{
+      font-family:'Roboto',sans-serif;
+      background-color:#f7f9fa;
+      color:#333;
+      line-height:1.65;
+      margin:0;
+      padding:0;
+    }
+    .container{
+      max-width:900px;
+      margin:0 auto;
+      padding:40px 20px;
+      background:#fff;
+      box-shadow:0 0 20px rgba(0,0,0,0.03);
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:28px;
+      padding-bottom:18px;
+      border-bottom:1px solid #eee;
+    }
+    h1{
+      font-size:2.2em;
+      font-weight:700;
+      color:#2c3e50;
+      margin:0 0 10px 0;
+    }
+    .subtitle{
+      font-size:1.05em;
+      color:#555;
+      margin:0 0 8px 0;
+    }
+    .affiliations{
+      font-size:0.92em;
+      color:#777;
+      font-style:italic;
+    }
+
+    /* 顶部锚点导航 */
+    .topnav{
+      margin-top:18px;
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .chip{
+      text-decoration:none;
+      font-size:0.9em;
+      color:#2c3e50;
+      background:#f2f4f6;
+      border:1px solid #e5e7eb;
+      padding:7px 12px;
+      border-radius:999px;
+      transition:all .2s;
+    }
+    .chip:hover{
+      background:#eaf2fb;
+      border-color:#cfe4ff;
+    }
+
+    /* 顶部按钮 */
+    .links{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      background:#333;
+      color:#fff;
+      text-decoration:none;
+      padding:10px 18px;
+      border-radius:30px;
+      font-weight:500;
+      transition:background .25s,border-color .25s;
+      display:inline-flex;
+      align-items:center;
+      border:1px solid #333;
+    }
+    .btn:hover{ background:#555;border-color:#555; }
+    .btn-outline{
+      background:transparent;
+      color:#333;
+    }
+    .btn-outline:hover{ background:#f0f0f0; }
+
+    section{ margin-bottom:46px; }
+
+    h2{
+      font-size:1.5em;
+      color:#2c3e50;
+      border-left:4px solid #3498db;
+      padding-left:15px;
+      margin-top:38px;
+      margin-bottom:16px;
+    }
+    h3{
+      font-size:1.18em;
+      font-weight:650;
+      margin-top:18px;
+      color:#444;
+    }
+    p{ margin:0 0 14px 0; text-align:justify; }
+
+    ul{ padding-left:20px; margin-top:8px; }
+    li{ margin-bottom:8px; }
+
+    /* 提示块 */
+    .callout{
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      padding:14px 16px;
+      border-radius:10px;
+      margin:14px 0;
+    }
+    .callout strong{ color:#1f2937; }
+
+    /* 表格 */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:14px 0 6px 0;
+      font-size:0.95em;
+    }
+    th,td{
+      border:1px solid #e6e6e6;
+      padding:10px 10px;
+      vertical-align:top;
+    }
+    th{
+      background:#f3f6f8;
+      color:#2c3e50;
+      font-weight:650;
+      text-align:left;
+    }
+    .small{ font-size:0.9em; color:#666; }
+
+    /* 图片 */
+    figure{ margin:26px 0; text-align:center; }
+    img{
+      max-width:100%;
+      height:auto;
+      border-radius:6px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.10);
+    }
+    figcaption{
+      margin-top:10px;
+      font-size:0.9em;
+      color:#666;
+      font-style:italic;
+    }
+
+    /* 下载块 */
+    .download-box{
+      background:#e8f4fc;
+      border:1px solid #b6e0fe;
+      padding:16px;
+      border-radius:10px;
+      text-align:left;
+      margin:16px 0;
+    }
+    .download-box .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#ffffff;
+      border:1px solid #cfe4ff;
+      font-size:0.85em;
+      color:#2c3e50;
+      margin-right:6px;
+      margin-top:6px;
+    }
+    code{
+      font-family:'Source Code Pro', monospace;
+      font-size:0.92em;
+      background:#f6f6f6;
+      padding:2px 5px;
+      border-radius:4px;
+    }
+
+    /* 引用 */
+    .citation-box{
+      background:#f1f1f1;
+      padding:18px;
+      border-radius:8px;
+      font-family:'Source Code Pro', monospace;
+      font-size:0.85em;
+      overflow-x:auto;
+      border:1px solid #e1e1e1;
+    }
+
+    footer{
+      text-align:center;
+      margin-top:54px;
+      padding-top:18px;
+      border-top:1px solid #eee;
+      font-size:0.82em;
+      color:#999;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <h1>HFUT-OP360</h1>
+    <p class="subtitle">
+      面向无人机真实场景的空间智能统一数据集：<b>点云去噪</b> / <b>图像-点云配准</b> / <b>边坡形变预测与预警</b> / <b>视觉-语言导航（VLN）</b>/ <b>3D空间语义地图</b>
+    </p>
+    <div class="affiliations">合肥工业大学（HFUT），合肥理工学院（HFIT）</div>
+
+    <!-- 顶部快捷按钮（把 TODO 换成你的真实链接） -->
+    <div class="links">
+      <a href="#" class="btn btn-outline">📄 论文（Paper）</a>
+      <a href="#" class="btn btn-outline">💻 代码（GitHub）</a>
+      <!-- <a href="TODO-leaderboard-link" class="btn btn-outline">🏆 排行榜（Leaderboard）</a> -->
+      <a href="#download" class="btn">💾 数据下载</a>
+    </div>
+
+    <!-- 锚点导航 -->
+    <div class="topnav">
+      <a class="chip" href="#news">动态</a>
+      <a class="chip" href="#abstract">摘要</a>
+      <a class="chip" href="#overview">数据概览</a>
+      <a class="chip" href="#part1">Part-1 3D空间语义地图</a>
+      <a class="chip" href="#part2">Part-2 点云去噪与配准</a>
+      <a class="chip" href="#part3">Part-3 视觉-语言导航</a>
+      <a class="chip" href="#part4">Part-4 边坡形变预测与预警</a>
+      <a class="chip" href="#benchmark">基准与基线</a>
+      <a class="chip" href="#download">下载</a>
+      <a class="chip" href="#citation">引用</a>
+    </div>
+  </header>
+  面向边坡巡检任务，无人机视觉语言导航（VLN），效果演示视频。
+<!-- <img> -->
+  <!-- 动态 -->
+  <section id="news">
+    <h2>动态</h2>
+    <div class="callout">
+      <ul>
+        <li><b>TODO（2024-12-25）：</b>发布 HFUT-OP360 v1.0</li>
+        <li><b>TODO（2025-03-10）：</b>开放评测脚本与基线结果。</li>
+      </ul>
+      <!-- <p class="small">建议持续更新此处，这会让主页更“像 OpenFly 的项目页”。</p> -->
+    </div>
+  </section>
+
+  <!-- 摘要 -->
+  <section id="abstract">
+    <h2>摘要</h2>
+    <p>
+      <b>HFUT-OP360 多模态边坡巡检数据集简介</b><br>
+
+HFUT-OP360 是申请人团队面向露天矿及典型高陡边坡巡检场景，自主构建的大规模多模态三维空间语义数据集，旨在支撑复杂地理环境下的空间感知、语义理解与风险决策研究。
+
+与现有国际多模态数据集主要面向城市交通、自动驾驶或室内规则环境不同，HFUT-OP360 聚焦高陡、非规则、强工程约束的自然边坡与露天矿场景，具有地形起伏剧烈、结构破碎、遮挡严重、纹理弱且目标尺度差异显著等典型特征，更贴近地理空间智能中“复杂自然场景”的核心挑战。同时，数据集突破单时相静态感知范式，显式引入多时相形变序列与工程语义标注，支持在统一空间语义框架下开展三维建模、形变演化分析、风险评估与巡检决策等连续研究任务。<br>
+
+从空间智能视角看，HFUT-OP360 不仅提供多模态观测数据，更通过工程结构单元与巡检对象的语义标注，构建了可用于任务语言解析、三维语义指代与风险决策闭环的基础数据条件，弥补了现有数据资源在高风险边坡巡检与空间智能决策场景中的显著不足。
+    </p>
+    <!-- <div class="callout">
+      <p style="margin:0;">
+        <b>定位一句话：</b>HFUT-OP360 让你在同一套场景域里同时评测“点云几何质量”“跨模态对齐能力”“语言导航能力”，减少任务割裂带来的评测偏差。
+      </p>
+    </div> -->
+  </section>
+
+  <!-- 数据概览 -->
+  <section id="overview">
+    <h2>数据概览</h2>
+    <p>
+      HFUT-OP360现已构建覆盖多时段（白天、夜晚、黄昏）、多气象条件（雾、雨、雪）及季节变化的仿真数据，用于三维空间语义理解与指代等算法验证与评估，保障研究连续推进。
+    </p>    
+    <!-- <img> -->
+  </section>
+
+  <!-- Part 1 -->
+  <section id="part1">
+    <h2>Part-1：无人机 LiDAR 点云去噪数据集</h2>
+
+    <h3>任务定义</h3>
+    <p>
+      给定含噪点云 <code>P_noisy</code>，目标是恢复参考点集 <code>P_clean</code>（或预测点级偏移/噪声掩码），
+      在抑制离群噪声的同时尽可能保留边坡折线、台阶（bench）、断裂线等关键几何结构。
+    </p>
+
+    <h3>核心特点</h3>
+    <ul>
+      <li><b>高密度 & 可复现：</b>复杂地形大规模点云，统一采集与处理流程，便于复现实验。</li>
+      <li><b>参考真值：</b>基于“<i>最小改动原则</i>”构建高保真参考点集，避免过度平滑造成几何失真。</li>
+      <li><b>可比性：</b>噪声协议可与公开数据集对齐，方便跨数据集验证。</li>
+      <li><b>多源协同：</b>同步倾斜影像用于几何与语义交叉验证（可选）。</li>
+    </ul>
+
+    <h3>数据采集</h3>
+    <ul>
+      <li><b>平台：</b>DJI Matrice 300 RTK 无人机 + <b>Zenmuse L1 LiDAR</b>。</li>
+      <li><b>场景：</b>两个代表性区域（PC_01、PC_02），覆盖陡坡、台阶与平坦区。</li>
+      <!-- <li><b>TODO：</b>补充飞行高度范围、点密度、回波/扫描参数与采集环境。</li> -->
+    </ul>
+
+    <h3>处理流程</h3>
+    <p>
+      标注采用“两阶段”策略：自动过滤 + 人工精修（重点处理边坡边缘、折线等歧义区域），并遵循<i>最小改动原则</i>。
+    </p>
+
+    <h3>噪声注入协议</h3>
+    <p>采用 GPU 加速实现（如 PyTorch3D），并建议固定随机种子保证可复现：</p>
+    <ul>
+      <li><b>各向同性高斯噪声：</b>按包围盒对角线比例注入：1%、2%、3%、5%、10%。</li>
+      <li><b>模拟 LiDAR 噪声：</b>距离相关方差、扫描线抖动、回波丢失等。</li>
+      <!-- <li><b>仿真工具：</b>BlenSor（模拟 Velodyne HDL-64E2 等传感器伪影）。</li> -->
+    </ul>
+
+    <h3>实验结果展示</h3>
+    <figure>
+      <img src="https://cdn.nlark.com/yuque/0/2025/png/40685004/1761417031937-4aa361aa-41dd-4305-898e-a4a538054ae6.png" alt="Quantitative Results">
+      <figcaption>图 A：模拟 LiDAR 噪声下的定量结果（可替换为最终图注）。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="https://cdn.nlark.com/yuque/0/2025/png/40685004/1761417039250-d8417b67-baf7-45a4-82ab-6de1600e4bda.png" alt="Failure Cases">
+      <figcaption>图 B：局限性与失败案例可视化（可替换为最终图注）。</figcaption>
+    </figure>
+  </section>
+
+  <!-- Part 2 -->
+  <section id="part2">
+    <h2>Part-2：图像-点云配准（I2P）数据集</h2>
+
+    <h3>任务定义</h3>
+    <p>
+      本部分用于评测无人机采集的 RGB 图像与 LiDAR 点云之间的跨模态对齐能力。
+      给定图像 <code>I</code> 与点云 <code>P</code>，目标是估计精确的外参/位姿 <code>T</code>，实现像素-点对应与跨模态融合。
+    </p>
+
+    <h3>数据与标注内容</h3>
+    <ul>
+      <li><b>RGB 图像</b>（或关键帧）与 <b>LiDAR 点云帧</b>。</li>
+      <li><b>标定信息：</b>相机内参 <code>K</code>、畸变（可选）、外参/位姿真值 <code>T_gt</code>。</li>
+      <li><b>配对/序列：</b>时间同步帧对或短序列，支持鲁棒匹配与初始化策略。</li>
+      <li><b>TODO：</b>说明是否提供初始估计 <code>T_init</code>、时间戳、同步策略与误差范围。</li>
+    </ul>
+
+    <h3>评测指标</h3>
+    <ul>
+      <li><b>RRE</b>（旋转误差）、<b>RTE</b>（平移误差）</li>
+      <!-- TODO：介绍一下RRE和RTE -->
+    </ul>
+  </section>
+  <!-- TODO：实验结果展示 -->
+   <h3>实验结果展示</h3>
+       <figure>
+      <img src="https://cdn.nlark.com/yuque/0/2026/jpeg/40685004/1767924261970-3238beeb-e7a9-46b9-8841-f4f85fa5a0b0.jpeg
+" alt="Quantitative Results">
+      <figcaption>图像-点云配准</figcaption>
+    </figure>
+      <section id="part3">
+    <h2>Part-3：边坡形变预测与预警</h2>
+
+    <h3>任务定义</h3>
+    <p>
+      围绕 GB-SAR 等面域监测数据的时空建模，申请人提出 MSPredictor 形变预测模型，实现复杂边坡形变演化的高效预测与可解释分析；进一步提出融合速度倒数曲线与加速起始点等物理先验的 PIKANs 模型，用于失稳时间预测与动态阈值设定，并在露天矿边坡预警案例中得到验证。上述成果可直接迁移至本项目语义区域形变预测、风险评估与分级预警闭环构建，为区域级决策提供成熟模型与物理约束。
+    </p>
+    
+    <h3>形变预测与机理分析</h3>
+    通过对GB-SAR 地表位移监测数据的系统分析，发现不同类型边坡的形变演化机理：
+A. 白家梁“水-岩相互作用型”边坡：建议优先构建横向监测网络与水文传感观测体系。关注“孔隙水压力、渗流量”等监测。
+B. 宏景塔“重力-卸荷联合作用型”边坡：应加强对垂向轴线的监测，如加密点 1-3-4、点 2-5 的位移和应变传感器。优化开采时序，严格控制单次开挖深度，避免应力集中在短时间内骤增。关注应力演化。
+    <!-- <img> -->
+    <h3> 风险评估与分级预警</h3>
+    <p>针对试点露天煤矿（如：白家梁和宏景塔），为评估滑坡造成的影响范围，根据重建的高精度三维模型，在 FLAC3D 中对边坡 DEM 模型进行仿真验证。</p>
+    <img src="FLAC3D.jpg" alt="Results">
+
+    <!-- <h3>数据内容</h3>
+
+    <h3>标准指标</h3> -->
+  </section>
+  <!-- Part 4 -->
+  <section id="part4">
+    <h2>Part-4：无人机视觉语言导航（VLN）数据集</h2>
+
+    <h3>任务定义</h3>
+    <p>
+      智能体在无人机视角下，根据自然语言指令完成目标导航。
+      每个 episode 通常包含视觉观测（RGB/视频/关键帧）、指令文本（目标描述）、以及真值轨迹或目标判定规则。
+    </p>
+
+    <h3>数据内容</h3>
+    <ul>
+      <li><b>指令：</b><code>instruction.jsonl</code>（文本、目标、难度标签等）</li>
+      <li><b>轨迹：</b>航点序列 <code>(x,y,z,yaw)</code> 或动作序列</li>
+      <li><b>视觉观测：</b>关键帧/视频帧 + 时间戳</li>
+      <li><b>目标定义：</b>成功区域 / 成功判定规则</li>
+      <li>（可选）粗地图 / 语义提示</li>
+    </ul>
+
+    <h3>标准指标</h3>
+    <ul>
+      <li><b>SR</b>（成功率）</li>
+      <li><b>SPL</b>（按路径长度加权的成功率）</li>
+      <li>（可选）nDTW / SDTW（轨迹相似度）</li>
+    </ul>
+
+    <div class="callout">
+      <p style="margin:0;">
+        <b>TODO：</b>建议明确是否采用 seen/unseen 划分，以及成功判定（半径/区域/是否需要 stop 动作）。
+      </p>
+    </div>
+  </section>
+
+  <!-- 基准与基线 -->
+  <section id="benchmark">
+    <h2>基准设置与基线方法</h2>
+    <p>
+      HFUT-OP360 建议通过统一的划分、预处理与评测脚本，进行公平对比。
+      推荐同时报告<b>整体指标</b>与<b>分场景/分难度统计</b>，以更准确衡量方法的泛化能力。
+    </p>
+
+    <h3>建议基线</h3>
+    <ul>
+      <li><b>Part-1 去噪：</b>统计滤波/MLS 等传统方法 + 学习方法（例如 Score-based 去噪）。</li>
+      <li><b>Part-2 配准：</b>PnP/ICP 变体 + 学习式 I2P 方法（特征匹配/对应点）。</li>
+      <li><b>Part-3 VLN：</b>行为克隆/模仿学习基线 +（可选）VLM 规划基线。</li>
+    </ul>
+  </section>
+
+  <!-- 下载 -->
+  <section id="download">
+    <h2>下载与使用说明</h2>
+    <p>
+      数据集、标注与评测工具面向学术研究开放。使用时请遵循许可协议，并在论文/报告中引用 HFUT-OP360。
+    </p>
+
+    <!-- Part-1 -->
+    <div class="download-box">
+      <div class="row">
+        <div>
+          <span class="badge"><b>Part-1</b> 点云去噪</span>
+          <span class="badge">LiDAR</span>
+          <span class="badge">Noisy / Clean</span>
+        </div>
+        <div>
+          <a class="btn" style="padding:8px 14px;border-radius:999px;" href="https://pan.baidu.com/s/1ulL5jYk-NZJbbRXVMxxu6A" target="_blank">下载</a>
+        </div>
+      </div>
+      <p style="margin:10px 0 0 0;">
+        <b>百度网盘：</b>https://pan.baidu.com/s/1ulL5jYk-NZJbbRXVMxxu6A<br>
+        <b>提取码：</b><span style="font-family:'Source Code Pro', monospace; font-size:1.05em; color:#d35400;">78fd</span>
+      </p>
+      <p class="small" style="margin-top:8px;">
+        内容包含：<code>*.xyz</code>、<code>*_clean.xyz</code>、离群点训练/测试集（<code>*.hdf5</code>）、预训练权重（<code>*.pth</code>）。
+      </p>
+    </div>
+
+    <!-- Part-2 -->
+    <div class="download-box">
+      <div class="row">
+        <div>
+          <span class="badge"><b>Part-2</b> 图像-点云配准</span>
+          <span class="badge">RGB + LiDAR</span>
+          <span class="badge">标定/位姿</span>
+        </div>
+        <div>
+          <a class="btn btn-outline" style="padding:8px 14px;border-radius:999px;" href="TODO-part2-download" target="_blank">下载（TODO）</a>
+        </div>
+      </div>
+      <p class="small" style="margin-top:10px;">
+        TODO：提供下载链接，并包含 <code>K.txt</code>、<code>T_gt.txt</code>、帧对列表、时间戳等。
+      </p>
+    </div>
+
+    <!-- Part-4 -->
+    <div class="download-box">
+      <div class="row">
+        <div>
+          <span class="badge"><b>Part-4</b> 视觉语言导航</span>
+          <span class="badge">指令</span>
+          <span class="badge">轨迹</span>
+        </div>
+        <div>
+          <a class="btn btn-outline" style="padding:8px 14px;border-radius:999px;" href="TODO-part3-download" target="_blank">下载（TODO）</a>
+        </div>
+      </div>
+      <p class="small" style="margin-top:10px;">
+        TODO：提供下载链接，并包含 <code>instruction.jsonl</code>、<code>trajectory.json</code>、视频/帧、goal 定义等。
+      </p>
+    </div>
+
+    <h3>目录结构（示例）</h3>
+    <div class="citation-box">
+<pre>HFUT-OP360/
+  Part1_Denoise/
+    PC_01/
+      sample_000001/
+        noisy.xyz
+        clean.xyz
+  Part2_Registration/
+    seq_0001/
+      cam/000001.png
+      lidar/000001.txt
+      calib/K.txt
+      calib/T_gt.txt
+      pairs.txt
+  Part3_VLN/
+    scene_0001/
+      traj_000001/
+        rgb/
+        trajectory.json
+        instruction.jsonl
+        goal.json</pre>
+    </div>
+
+    <div class="callout">
+      <p style="margin:0;">
+        <b>复现建议：</b>噪声注入建议固定随机种子；评测建议使用官方脚本（TODO 链接），并记录预处理细节与阈值设置。
+      </p>
+    </div>
+  </section>
+
+  <!-- 引用 -->
+  <section id="citation">
+    <h2>引用方式</h2>
+    <p>如果你在研究中使用 HFUT-OP360，请引用数据集论文与相关基线：</p>
+
+    <div class="citation-box">
+<pre>@article{wan2025mspredictor,
+	title={MSPredictor: A Multi-Scale Dynamic Graph Neural Network for Multivariate Time Series Prediction},
+	author={Wan, Jiashan and Xia, Na and Li, Gongwen and Li, Jingyang and Wu, Jinhua and Pan, Xulei and Lian, Mengqi},
+	journal={IEEE Transactions on Emerging Topics in Computational Intelligence},
+	volume = {9},
+	number = {6},
+	pages = {4243-4257},
+	year={2025},
+	publisher={IEEE}
+}
+@article{wan2025pikans,
+	title={PIKANs: Physics-informed Kolmogorov--Arnold networks for landslide time-to-failure prediction},
+	author={Wan, Jiashan and Wen, Liangjun and Jian, Ziheng and Wu, Jinhua and Li, Jingyang and Lian, Mengqi and Wang, Kai},
+	journal={Computers \& Geosciences},
+	pages={106094},
+	year={2025},
+	publisher={Elsevier}
+}
+@article{wan2024tcdformer,
+	title={TCDformer: A transformer framework for non-stationary time series forecasting based on trend and change-point detection},
+	author={Wan, Jiashan and Xia, Na and Yin, Yutao and Pan, Xulei and Hu, Jin and Yi, Jun},
+	journal={Neural Networks},
+	volume={173},
+	pages={106196},
+	year={2024},
+	publisher={Elsevier}
+}
+@article{wan2025damixer,
+	title={DAMixer: A dual-stage attention-based mixer model for multivariate time series forecasting},
+	author={Wan, Jiashan and Xia, Na and Cai, Bing and Li, Gongwen and Wei, Sizhou and Pan, Xulei},
+	journal={Expert Systems with Applications},
+	volume={274},
+	pages={127030},
+	year={2025},
+	publisher={Elsevier}
+}
+</pre>
+    </div>
+
+    <h3>许可协议</h3>
+    <p class="small">
+      <b>TODO</b>
+    </p>
+
+    <h3>联系方式</h3>
+    <p class="small">
+      维护者：<b>wangkai</b> &nbsp;|&nbsp; 邮箱：<b>wangkai_anhui@qq.com</b> &nbsp;|&nbsp; 单位：HFUT
+    </p>
+  </section>
+
+  <!-- <footer>
+    <p>Copyright © 2025 HFUT-OP360 Team. All rights reserved.</p>
+  </footer> -->
+
+</div>
+</body>
+</html>
