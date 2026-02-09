@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HFUT-OP360 项目里程碑时间轴</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .hide-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .hide-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .timeline-line {
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6 0%, #a855f7 100%);
+            position: absolute;
+            top: 22px;
+            left: 0;
+            right: 0;
+            z-index: 0;
+        }
+
+        .milestone-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .milestone-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .dot-pulse {
+            position: relative;
+        }
+        .dot-pulse::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: inherit;
+            border-radius: inherit;
+            animation: pulse 2s infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* 强制换行并保持预格式化空格 */
+        .content-text {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <div class="min-h-screen flex flex-col items-center py-12 px-4">
+        
+        <!-- Timeline Container -->
+        <div class="w-full max-w-7xl overflow-x-auto hide-scrollbar pb-12 px-4">
+            <div class="relative min-w-[2400px] flex justify-between pt-10">
+                
+                <!-- Background Progress Line -->
+                <div class="timeline-line rounded-full opacity-20"></div>
+
+                <!-- 2024-12-25 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-nowrap">2024-12-25</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">v1.0 发布</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">覆盖 20 余处露天矿山与典型高陡边坡场景
+
+初步集成：UAV 倾斜摄影影像、机载 LiDAR 点云、GB-SAR 面域形变数据、GNSS 位移观测数据等</div>
+                    </div>
+                </div>
+
+                <!-- 2025-02-10 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-nowrap">2025-02-10</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">PointCleaner去噪方法与数据开放</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">正式开放点云去噪方法
+    PointCleaner 的代码与配套数据
+
+在 HFUT-OP360 多航次点云上验证其高保形几何重建能力</div>
+                    </div>
+                </div>
+
+                <!-- 2025-03-22 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full text-nowrap">2025-03-22</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">多航次 UAV 数据的系统化补采与配准</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">针对重点矿区开展多航次 UAV 影像与 LiDAR 补采</div>
+                    </div>
+                </div>
+
+                <!-- 2025-04-08 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full text-nowrap">2025-04-08</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">CrossI2P影像–点云跨模态配准方法与数据开放</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">实现影像纹理与点云几何的厘米级精对齐
+
+为“图像—点云—语言”统一三维表达奠定基础</div>
+                    </div>
+                </div>
+
+                <!-- 2025-07-22 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full text-nowrap">2025-07-22</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">工程结构单元级语义标注启动</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">在高质量三维模型基础上，引入工程语义标注
+
+标注对象包括：
+台阶坡面、平台、坡顶带、坡脚带
+危岩体、堆积体、排水沟段等巡检关键对象</div>
+                    </div>
+                </div>
+
+                <!-- 2025-09-29 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full text-nowrap">2025-09-29</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">语义区域与多源形变时序绑定</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">将 GB-SAR、GNSS 形变序列与语义区域进行显式绑定</div>
+                    </div>
+                </div>
+
+                <!-- 2026-01-31 -->
+                <div class="relative flex flex-col items-center w-80 group px-4">
+                    <div class="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full text-nowrap">2026-01-31</span>
+                    </div>
+                    <div class="milestone-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full hover:shadow-xl">
+                        <h3 class="font-bold text-lg mb-3 text-slate-800 border-b pb-2">巡检任务文本与行为数据整理</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed content-text">整理真实矿区巡检记录与专家描述
+
+形成“巡检任务语言—语义区域—空间约束”的对齐样本</div>
+                    </div>
+                </div>
+
+                <!-- 2026-02-01 — 至今 -->
+                <div class="relative flex flex-col items-center w-96 group px-4">
+                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white z-10 shadow-lg mb-6 group-hover:scale-110 transition-transform dot-pulse">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div class="text-center mb-4">
+                        <span class="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-full text-nowrap">2026-02-01 — 至今</span>
+                    </div>
+                    <div class="milestone-card bg-orange-50 p-6 rounded-2xl shadow-sm border border-orange-200 w-full hover:shadow-xl ring-2 ring-orange-100">
+                        <h3 class="font-bold text-lg mb-3 text-orange-900 border-b border-orange-200 pb-2">服务于空间智能闭环研究的持续扩展</h3>
+                        <div class="text-xs text-orange-800 leading-relaxed content-text">持续完善数据集从“观测数据集合”升级为：面向语言驱动空间认知与决策的地理大数据载体，预计6月前发布 HFUT-OP360 v2.0 
+
+任务语言驱动的三维语义指代
+语义区域级形变预测与风险评估
+无人机主动复查视点与航迹优化</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // 初始化时自动滚动到最右端
+        window.onload = () => {
+            const container = document.querySelector('.overflow-x-auto');
+            if (container) {
+                container.scrollLeft = container.scrollWidth;
+            }
+        };
+    </script>
+</body>
+</html>
